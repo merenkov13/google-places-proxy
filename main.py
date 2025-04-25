@@ -20,8 +20,7 @@ def find_company(query: str, city: str):
         "language": "de"
     }
     resp = requests.get(url, params=params)
-    if resp.status_code != 200:
-        raise HTTPException(status_code=resp.status_code, detail="Google Places API error")
+    print(resp.text)  # <--- ДОБАВЬ ЭТУ СТРОКУ
     data = resp.json()
     results = []
     for place in data.get("results", []):
