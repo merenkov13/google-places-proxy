@@ -1,9 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import requests
+import os
 
 app = FastAPI()
 
-API_KEY = "AIzaSyBnAHurADs_0Uk0p-8PRJQnEW6lzbIdTCg"
+# Получаем API ключ из переменных окружения
+API_KEY = os.environ.get("GOOGLE_PLACES_API_KEY")
+
+if not API_KEY:
+    raise RuntimeError("GOOGLE_PLACES_API_KEY is not set. Please add it as an environment variable.")
 
 @app.get("/find_company")
 def find_company(query: str, city: str):
@@ -15,6 +20,8 @@ def find_company(query: str, city: str):
         "language": "de"
     }
     resp = requests.get(url, params=params)
+    if resp.status_code != 200:
+        raise HTTPException(status_code=resp.status_code, detail="Google Places API error")
     data = resp.json()
     results = []
     for place in data.get("results", []):
